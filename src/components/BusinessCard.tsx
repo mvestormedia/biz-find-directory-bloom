@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Star, Award, Globe, Phone } from 'lucide-react';
+import { MapPin, Star, Award, Globe, Phone, CheckCircle } from 'lucide-react';
 import { Business } from '@/data/mockData';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,24 +10,56 @@ interface BusinessCardProps {
   business: Business;
 }
 
+const getAwardColor = (level: string) => {
+  switch (level) {
+    case 'platinum':
+      return 'bg-purple-100 text-purple-800 border-purple-200';
+    case 'gold':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case 'silver':
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'bronze':
+      return 'bg-orange-100 text-orange-800 border-orange-200';
+    case 'excellence':
+      return 'bg-green-100 text-green-800 border-green-200';
+    default:
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+  }
+};
+
 const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
   return (
     <Card className="hover:shadow-lg transition-shadow duration-300 border border-gray-200">
       <CardHeader className="pb-3">
         <div className="flex items-start gap-4">
-          <img
-            src={business.logo}
-            alt={`${business.name} logo`}
-            className="w-16 h-16 rounded-lg object-cover border border-gray-200"
-          />
+          <div className="relative">
+            <img
+              src={business.logo}
+              alt={`${business.name} logo`}
+              className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+            />
+            {business.isVerified && (
+              <div className="absolute -top-1 -right-1 bg-blue-600 rounded-full p-1">
+                <CheckCircle className="h-3 w-3 text-white" />
+              </div>
+            )}
+          </div>
           <div className="flex-1 min-w-0">
             <Link 
               to={`/business/${business.id}`}
               className="block group"
             >
-              <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
-                {business.name}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                  {business.name}
+                </h3>
+                {business.isVerified && (
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Verified
+                  </Badge>
+                )}
+              </div>
             </Link>
             <p className="text-sm text-gray-600 mt-1">{business.subcategory}</p>
             
@@ -52,14 +84,28 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
           {business.description}
         </p>
         
-        <div className="flex flex-wrap gap-2 mb-4">
-          {business.awards.length > 0 && (
-            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
-              <Award className="h-3 w-3 mr-1" />
-              {business.awards[0].name}
-            </Badge>
-          )}
-          
+        {/* Awards section */}
+        {business.awards.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {business.awards.slice(0, 3).map((award, index) => (
+              <Badge
+                key={index}
+                variant="outline"
+                className={`text-xs ${getAwardColor(award.level)}`}
+              >
+                <Award className="h-3 w-3 mr-1" />
+                {award.name} {award.year}
+              </Badge>
+            ))}
+            {business.awards.length > 3 && (
+              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600">
+                +{business.awards.length - 3} more
+              </Badge>
+            )}
+          </div>
+        )}
+        
+        <div className="flex items-center gap-2 mb-4">
           <Badge variant="outline" className="text-xs">
             Est. {business.yearEstablished}
           </Badge>

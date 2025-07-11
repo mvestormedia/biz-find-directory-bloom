@@ -3,6 +3,7 @@ export interface Award {
   name: string;
   year: number;
   organization: string;
+  level: 'gold' | 'silver' | 'bronze' | 'platinum' | 'excellence';
 }
 
 export interface Location {
@@ -38,6 +39,7 @@ export interface Business {
     twitter?: string;
     linkedin?: string;
   };
+  isVerified: boolean;
 }
 
 export interface Category {
@@ -48,54 +50,64 @@ export interface Category {
 
 export const categories: Category[] = [
   {
-    id: "automotive",
-    name: "Automotive",
-    subcategories: ["Auto Repair", "Car Dealerships", "Auto Parts", "Car Wash", "Towing Services"]
+    id: "auto",
+    name: "Auto",
+    subcategories: ["Auto Repair", "Car Dealerships", "Auto Parts", "Car Wash", "Towing Services", "Body Shops", "Oil Change", "Tire Services", "Auto Glass", "Auto Detailing", "Motorcycle Dealers", "RV Dealers", "Auto Insurance", "Auto Loans", "Car Rental"]
   },
   {
-    id: "healthcare",
-    name: "Healthcare",
-    subcategories: ["Hospitals", "Dental Clinics", "Pharmacies", "Medical Centers", "Specialists"]
+    id: "beauty-fashion",
+    name: "Beauty-Fashion",
+    subcategories: ["Hair Salons", "Nail Salons", "Spas", "Massage Therapy", "Skincare", "Makeup Artists", "Barber Shops", "Eyebrow Threading", "Tattoo Parlors", "Piercing Studios", "Fashion Boutiques", "Clothing Stores", "Shoe Stores", "Jewelry Stores", "Accessories"]
   },
   {
-    id: "retail",
-    name: "Retail",
-    subcategories: ["Clothing Stores", "Electronics", "Grocery Stores", "Home & Garden", "Sporting Goods"]
+    id: "business",
+    name: "Business",
+    subcategories: ["Consulting", "Marketing", "Advertising", "Public Relations", "Business Services", "Office Supplies", "Printing Services", "Shipping Services", "Event Planning", "Photography", "Videography", "Web Design", "IT Services", "Software Development", "Coworking Spaces"]
   },
   {
-    id: "restaurants",
-    name: "Restaurants & Food",
-    subcategories: ["Fast Food", "Fine Dining", "Cafes", "Food Delivery", "Catering"]
+    id: "contractors",
+    name: "Contractors",
+    subcategories: ["General Contractors", "Plumbing", "Electrical", "HVAC", "Roofing", "Flooring", "Painting", "Landscaping", "Tree Services", "Concrete", "Fencing", "Windows & Doors", "Kitchen Remodeling", "Bathroom Remodeling", "Deck Building"]
   },
   {
-    id: "services",
-    name: "Professional Services",
-    subcategories: ["Legal Services", "Accounting", "Real Estate", "Insurance", "Consulting"]
-  },
-  {
-    id: "beauty",
-    name: "Beauty & Wellness",
-    subcategories: ["Hair Salons", "Spas", "Fitness Centers", "Nail Salons", "Massage Therapy"]
-  },
-  {
-    id: "home",
-    name: "Home Services",
-    subcategories: ["Plumbing", "Electrical", "HVAC", "Cleaning Services", "Landscaping"]
-  },
-  {
-    id: "education",
-    name: "Education",
-    subcategories: ["Schools", "Universities", "Training Centers", "Tutoring", "Libraries"]
+    id: "dining",
+    name: "Dining",
+    subcategories: ["Restaurants", "Fast Food", "Fine Dining", "Cafes", "Coffee Shops", "Bars", "Pubs", "Food Trucks", "Catering", "Bakeries", "Pizza", "Sushi", "Mexican Food", "Italian Food", "Asian Cuisine", "Steakhouses", "Seafood", "Vegetarian", "Food Delivery"]
   },
   {
     id: "entertainment",
     name: "Entertainment",
-    subcategories: ["Movie Theaters", "Bars & Nightlife", "Recreation Centers", "Event Venues", "Museums"]
+    subcategories: ["Movie Theaters", "Bowling Alleys", "Arcades", "Amusement Parks", "Mini Golf", "Escape Rooms", "Karaoke", "Comedy Clubs", "Concert Venues", "Sports Bars", "Pool Halls", "Dance Clubs", "Art Galleries", "Museums", "Theaters", "Live Music Venues"]
   },
   {
-    id: "technology",
-    name: "Technology",
-    subcategories: ["IT Services", "Software Development", "Computer Repair", "Web Design", "Digital Marketing"]
+    id: "fitness-outdoors",
+    name: "Fitness-Outdoors",
+    subcategories: ["Gyms", "Yoga Studios", "Pilates", "Personal Training", "Martial Arts", "Dance Studios", "Swimming Pools", "Tennis Courts", "Golf Courses", "Hiking Trails", "Bike Shops", "Sporting Goods", "Outdoor Gear", "Camping", "Fishing", "Hunting"]
+  },
+  {
+    id: "health",
+    name: "Health",
+    subcategories: ["Hospitals", "Medical Centers", "Urgent Care", "Family Medicine", "Specialists", "Dental Clinics", "Orthodontists", "Optometrists", "Chiropractors", "Physical Therapy", "Mental Health", "Pharmacies", "Medical Supplies", "Home Health", "Veterinarians"]
+  },
+  {
+    id: "home-improvement",
+    name: "Home Improvement",
+    subcategories: ["Hardware Stores", "Home Centers", "Appliance Stores", "Furniture Stores", "Interior Design", "Carpet Cleaning", "House Cleaning", "Pest Control", "Security Systems", "Solar Panels", "Pool Services", "Garage Doors", "Gutters", "Insulation", "Siding"]
+  },
+  {
+    id: "legal-finance",
+    name: "Legal-Finance",
+    subcategories: ["Attorneys", "Law Firms", "Legal Services", "Notaries", "Banks", "Credit Unions", "Investment Services", "Insurance", "Accounting", "Tax Services", "Financial Planning", "Real Estate", "Mortgage Brokers", "Title Companies", "Bail Bonds"]
+  },
+  {
+    id: "services",
+    name: "Services",
+    subcategories: ["Dry Cleaning", "Laundromats", "Pet Services", "Pet Grooming", "Kennels", "Moving Services", "Storage Units", "Locksmiths", "Appliance Repair", "Electronics Repair", "Computer Repair", "Phone Repair", "Tailoring", "Watch Repair", "Shoe Repair"]
+  },
+  {
+    id: "shopping",
+    name: "Shopping",
+    subcategories: ["Grocery Stores", "Supermarkets", "Department Stores", "Electronics Stores", "Book Stores", "Toy Stores", "Gift Shops", "Antiques", "Thrift Stores", "Farmers Markets", "Specialty Foods", "Wine Shops", "Garden Centers", "Art Supplies", "Office Supplies"]
   }
 ];
 
@@ -103,30 +115,52 @@ export const categories: Category[] = [
 const generateMockBusinesses = (): Business[] => {
   const businesses: Business[] = [];
   const businessNames = [
-    "TechFlow Solutions", "Green Valley Motors", "Sunrise Medical Center", "Elite Consulting Group",
-    "Urban Bistro", "Crystal Clear Cleaning", "Premier Legal Services", "Fitness First Gym",
-    "Digital Marketing Pro", "Home Comfort HVAC", "Bella Vista Salon", "Mountain View Dental",
-    "Swift Auto Repair", "Golden Gate Restaurant", "Precision Engineering", "Bright Future Academy"
+    "Premium Auto Center", "Elite Beauty Salon", "Strategic Business Solutions", "Master Contractors Inc",
+    "Gourmet Bistro", "Fun Zone Entertainment", "Peak Fitness Studio", "Advanced Medical Center",
+    "Dream Home Improvements", "Trusted Legal Partners", "Quality Service Pro", "Shopping Paradise",
+    "Precision Auto Works", "Luxe Beauty Spa", "Innovation Business Hub", "Reliable Contractors",
+    "Taste of Heaven", "Adventure Entertainment", "Active Life Gym", "Complete Health Care",
+    "Perfect Home Solutions", "Expert Legal Group", "Premier Services", "Value Shopping Center"
+  ];
+
+  const awardTypes = [
+    { name: "Best of the Best", level: 'platinum' as const, org: "Industry Excellence Awards" },
+    { name: "Customer Choice Award", level: 'gold' as const, org: "Local Business Association" },
+    { name: "Excellence in Service", level: 'gold' as const, org: "Professional Standards Board" },
+    { name: "Top Rated Business", level: 'silver' as const, org: "Community Choice Awards" },
+    { name: "Quality Leader", level: 'bronze' as const, org: "Business Quality Institute" },
+    { name: "Outstanding Achievement", level: 'excellence' as const, org: "Industry Professional Network" },
+    { name: "Certified Professional", level: 'excellence' as const, org: "Professional Certification Board" },
+    { name: "Innovation Award", level: 'gold' as const, org: "Technology Innovation Council" },
+    { name: "Safety Excellence", level: 'silver' as const, org: "Safety Standards Organization" },
+    { name: "Environmental Leader", level: 'bronze' as const, org: "Green Business Council" }
   ];
 
   for (let i = 0; i < 1000; i++) {
     const category = categories[Math.floor(Math.random() * categories.length)];
     const subcategory = category.subcategories[Math.floor(Math.random() * category.subcategories.length)];
     
+    // Generate 0-4 awards randomly
+    const numAwards = Math.floor(Math.random() * 5);
+    const businessAwards: Award[] = [];
+    for (let j = 0; j < numAwards; j++) {
+      const award = awardTypes[Math.floor(Math.random() * awardTypes.length)];
+      businessAwards.push({
+        name: award.name,
+        year: 2020 + Math.floor(Math.random() * 4),
+        organization: award.org,
+        level: award.level
+      });
+    }
+    
     businesses.push({
       id: `business-${i + 1}`,
       name: `${businessNames[Math.floor(Math.random() * businessNames.length)]} ${i + 1}`,
-      description: `Professional ${subcategory.toLowerCase()} services with over ${Math.floor(Math.random() * 20) + 5} years of experience. We pride ourselves on exceptional customer service and quality results.`,
+      description: `Professional ${subcategory.toLowerCase()} services with over ${Math.floor(Math.random() * 20) + 5} years of experience. We pride ourselves on exceptional customer service and quality results that exceed expectations.`,
       logo: `https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200&fit=crop&crop=center`,
       category: category.name,
       subcategory,
-      awards: Math.random() > 0.7 ? [
-        {
-          name: "Excellence Award",
-          year: 2023,
-          organization: "Industry Association"
-        }
-      ] : [],
+      awards: businessAwards,
       locations: Array.from({ length: Math.floor(Math.random() * 5) + 1 }, (_, idx) => ({
         id: `location-${i}-${idx}`,
         address: `${Math.floor(Math.random() * 9999) + 1} Main Street`,
@@ -148,7 +182,8 @@ const generateMockBusinesses = (): Business[] => {
       socialMedia: {
         facebook: Math.random() > 0.5 ? `https://facebook.com/business${i + 1}` : undefined,
         linkedin: Math.random() > 0.5 ? `https://linkedin.com/company/business${i + 1}` : undefined
-      }
+      },
+      isVerified: Math.random() > 0.7 // 30% chance of being verified
     });
   }
 
