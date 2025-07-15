@@ -196,8 +196,8 @@ const BusinessDetail: React.FC = () => {
                           <div className="space-y-2">
                             <div className="flex items-center gap-2 text-gray-700">
                               <Phone className="h-4 w-4 text-gray-400" />
-                              <a href={`tel:${location.phone}`} className="hover:text-blue-600 transition-colors">
-                                {location.phone}
+                              <a href={`tel:${location.phone}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                                Tap to Call
                               </a>
                             </div>
                           </div>
@@ -230,7 +230,7 @@ const BusinessDetail: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-gray-400" />
                   <a href={`tel:${business.locations[0]?.phone}`} className="text-blue-600 hover:text-blue-800 transition-colors">
-                    {business.locations[0]?.phone}
+                    Tap to Call
                   </a>
                 </div>
                 

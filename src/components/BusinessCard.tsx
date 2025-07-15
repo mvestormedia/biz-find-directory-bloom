@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Star, Award, Globe, Phone, CheckCircle, Diamond, Shield } from 'lucide-react';
+import { MapPin, Star, Award, CheckCircle, Diamond, Shield } from 'lucide-react';
 import { Business } from '@/data/mockData';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -137,28 +137,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
           </Badge>
         </div>
         
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <Phone className="h-4 w-4" />
-              <span>{business.locations[0]?.phone}</span>
-            </div>
-            
-            {business.website && (
-              <div className="flex items-center gap-1">
-                <Globe className="h-4 w-4" />
-                <a 
-                  href={business.website} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 transition-colors"
-                >
-                  Website
-                </a>
-              </div>
-            )}
-          </div>
-          
+        <div className="flex items-center justify-end text-sm text-gray-600">
           <Link 
             to={`/business/${business.id}`}
             className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
