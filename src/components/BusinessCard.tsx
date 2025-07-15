@@ -48,13 +48,13 @@ const getSponsorshipBadge = (level: string | null) => {
 const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
   return (
     <Card className="hover:shadow-lg transition-shadow duration-300 border border-gray-200">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2">
         <div className="flex items-start gap-4">
           <div className="relative">
             <img
               src={business.logo}
               alt={`${business.name} logo`}
-              className="w-16 h-16 rounded-lg object-cover border border-gray-200"
+              className="w-14 h-14 rounded-lg object-cover border border-gray-200"
             />
             {business.isVerified && (
               <div className="absolute -top-1 -right-1 bg-blue-600 rounded-full p-1">
@@ -68,7 +68,7 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
               className="block group"
             >
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
+                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors truncate">
                   {business.name}
                 </h3>
                 {business.isVerified && (
@@ -98,12 +98,12 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
       </CardHeader>
       
       <CardContent className="pt-0">
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-700 text-sm mb-3 line-clamp-2">
           {business.description}
         </p>
         
         {/* Badges section */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-3">
           {getSponsorshipBadge(business.sponsorshipLevel)}
           
           {business.isCertifiedMember && (
@@ -129,12 +129,6 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
               +{business.awards.length - 2} more
             </Badge>
           )}
-        </div>
-        
-        <div className="flex items-center gap-2 mb-4">
-          <Badge variant="outline" className="text-xs">
-            Est. {business.yearEstablished}
-          </Badge>
         </div>
         
         <div className="flex items-center justify-end text-sm text-gray-600">
