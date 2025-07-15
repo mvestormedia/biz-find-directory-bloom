@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Star, Award, MapPin, Phone, Globe, Mail, Calendar, Users } from 'lucide-react';
+import { ArrowLeft, Star, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag } from 'lucide-react';
 import { mockBusinesses } from '@/data/mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,35 @@ const BusinessDetail: React.FC = () => {
       </div>
     );
   }
+
+  const getSponsorshipBadge = (level: string | null) => {
+    if (!level) return null;
+    
+    const colors = {
+      diamond: 'bg-purple-100 text-purple-800 border-purple-200',
+      gold: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      silver: 'bg-gray-100 text-gray-800 border-gray-200',
+      bronze: 'bg-orange-100 text-orange-800 border-orange-200'
+    };
+    
+    return (
+      <Badge variant="secondary" className={colors[level as keyof typeof colors]}>
+        <Diamond className="h-3 w-3 mr-1" />
+        {level.charAt(0).toUpperCase() + level.slice(1)} Sponsor
+      </Badge>
+    );
+  };
+
+  const getSocialIcon = (platform: string) => {
+    switch (platform) {
+      case 'facebook': return <Facebook className="h-4 w-4" />;
+      case 'instagram': return <Instagram className="h-4 w-4" />;
+      case 'twitter': return <Twitter className="h-4 w-4" />;
+      case 'linkedin': return <Linkedin className="h-4 w-4" />;
+      case 'youtube': return <Youtube className="h-4 w-4" />;
+      default: return <Globe className="h-4 w-4" />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,11 +95,36 @@ const BusinessDetail: React.FC = () => {
                 </div>
               </div>
               
-              <div className="flex flex-wrap gap-2">
-                {business.awards.map((award, index) => (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {business.isVerified && (
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Verified
+                  </Badge>
+                )}
+                
+                {getSponsorshipBadge(business.sponsorshipLevel)}
+                
+                {business.isCertifiedMember && (
+                  <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                    <Shield className="h-3 w-3 mr-1" />
+                    Certified Member
+                  </Badge>
+                )}
+                
+                {business.awards.slice(0, 2).map((award, index) => (
                   <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
                     <Award className="h-3 w-3 mr-1" />
                     {award.name} {award.year}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {business.categories.map((cat, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    <Tag className="h-3 w-3 mr-1" />
+                    {cat}
                   </Badge>
                 ))}
               </div>
@@ -204,8 +258,39 @@ const BusinessDetail: React.FC = () => {
                 <Button className="w-full mt-4">
                   Contact Business
                 </Button>
+                
+                <Button variant="outline" className="w-full">
+                  Claim Listing
+                </Button>
               </CardContent>
             </Card>
+
+            {/* Social Media */}
+            {Object.entries(business.socialMedia).some(([_, url]) => url) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Follow Us</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(business.socialMedia).map(([platform, url]) => 
+                      url ? (
+                        <a
+                          key={platform}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm"
+                        >
+                          {getSocialIcon(platform)}
+                          <span className="capitalize">{platform}</span>
+                        </a>
+                      ) : null
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Quick Stats */}
             <Card>
@@ -229,6 +314,12 @@ const BusinessDetail: React.FC = () => {
                   <span className="text-gray-600">Established</span>
                   <span className="font-semibold">{business.yearEstablished}</span>
                 </div>
+                {business.sponsorshipLevel && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Sponsor Level</span>
+                    <span className="font-semibold capitalize">{business.sponsorshipLevel}</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Star, Award, Globe, Phone, CheckCircle } from 'lucide-react';
+import { MapPin, Star, Award, Globe, Phone, CheckCircle, Diamond, Shield } from 'lucide-react';
 import { Business } from '@/data/mockData';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +25,24 @@ const getAwardColor = (level: string) => {
     default:
       return 'bg-blue-100 text-blue-800 border-blue-200';
   }
+};
+
+const getSponsorshipBadge = (level: string | null) => {
+  if (!level) return null;
+  
+  const colors = {
+    diamond: 'bg-purple-100 text-purple-800 border-purple-200',
+    gold: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    silver: 'bg-gray-100 text-gray-800 border-gray-200',
+    bronze: 'bg-orange-100 text-orange-800 border-orange-200'
+  };
+  
+  return (
+    <Badge variant="secondary" className={colors[level as keyof typeof colors]}>
+      <Diamond className="h-3 w-3 mr-1" />
+      {level.charAt(0).toUpperCase() + level.slice(1)}
+    </Badge>
+  );
 };
 
 const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
@@ -84,26 +102,34 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
           {business.description}
         </p>
         
-        {/* Awards section */}
-        {business.awards.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {business.awards.slice(0, 3).map((award, index) => (
-              <Badge
-                key={index}
-                variant="outline"
-                className={`text-xs ${getAwardColor(award.level)}`}
-              >
-                <Award className="h-3 w-3 mr-1" />
-                {award.name} {award.year}
-              </Badge>
-            ))}
-            {business.awards.length > 3 && (
-              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600">
-                +{business.awards.length - 3} more
-              </Badge>
-            )}
-          </div>
-        )}
+        {/* Badges section */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {getSponsorshipBadge(business.sponsorshipLevel)}
+          
+          {business.isCertifiedMember && (
+            <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+              <Shield className="h-3 w-3 mr-1" />
+              Certified
+            </Badge>
+          )}
+          
+          {business.awards.slice(0, 2).map((award, index) => (
+            <Badge
+              key={index}
+              variant="outline"
+              className={`text-xs ${getAwardColor(award.level)}`}
+            >
+              <Award className="h-3 w-3 mr-1" />
+              {award.name} {award.year}
+            </Badge>
+          ))}
+          
+          {business.awards.length > 2 && (
+            <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600">
+              +{business.awards.length - 2} more
+            </Badge>
+          )}
+        </div>
         
         <div className="flex items-center gap-2 mb-4">
           <Badge variant="outline" className="text-xs">

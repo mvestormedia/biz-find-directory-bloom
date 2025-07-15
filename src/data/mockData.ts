@@ -36,10 +36,15 @@ export interface Business {
   services: string[];
   socialMedia: {
     facebook?: string;
+    instagram?: string;
     twitter?: string;
     linkedin?: string;
+    youtube?: string;
   };
   isVerified: boolean;
+  sponsorshipLevel: 'diamond' | 'gold' | 'silver' | 'bronze' | null;
+  isCertifiedMember: boolean;
+  categories: string[];
 }
 
 export interface Category {
@@ -136,6 +141,23 @@ const generateMockBusinesses = (): Business[] => {
     { name: "Environmental Leader", level: 'bronze' as const, org: "Green Business Council" }
   ];
 
+  const servicesByCategory: { [key: string]: string[] } = {
+    "Auto": ["Oil Changes", "Brake Service", "Engine Repair", "Transmission Service", "AC Repair", "Tire Installation"],
+    "Beauty-Fashion": ["Haircuts & Styling", "Hair Coloring", "Manicures & Pedicures", "Facials", "Massage Therapy", "Makeup Application"],
+    "Business": ["Strategic Planning", "Digital Marketing", "Graphic Design", "Content Creation", "SEO Services", "Social Media Management"],
+    "Contractors": ["Home Renovation", "Kitchen Remodeling", "Bathroom Remodeling", "Flooring Installation", "Painting", "Electrical Work"],
+    "Dining": ["Dine-In Service", "Takeout", "Delivery", "Catering", "Private Events", "Happy Hour"],
+    "Entertainment": ["Live Shows", "Private Parties", "Group Events", "Birthday Parties", "Corporate Events", "Team Building"],
+    "Fitness-Outdoors": ["Personal Training", "Group Classes", "Equipment Rental", "Nutrition Counseling", "Fitness Assessments", "Outdoor Adventures"],
+    "Health": ["Preventive Care", "Emergency Services", "Specialist Consultations", "Diagnostic Testing", "Treatment Plans", "Follow-up Care"],
+    "Home Improvement": ["Design Consultation", "Installation Services", "Maintenance", "Repair Services", "Custom Solutions", "Warranty Support"],
+    "Legal-Finance": ["Legal Consultation", "Document Preparation", "Court Representation", "Financial Planning", "Investment Advice", "Tax Preparation"],
+    "Services": ["Pickup & Delivery", "Same-Day Service", "Emergency Service", "Maintenance Plans", "Consultation", "Custom Solutions"],
+    "Shopping": ["In-Store Shopping", "Online Orders", "Curbside Pickup", "Home Delivery", "Personal Shopping", "Gift Wrapping"]
+  };
+
+  const sponsorshipLevels: ('diamond' | 'gold' | 'silver' | 'bronze' | null)[] = ['diamond', 'gold', 'silver', 'bronze', null];
+
   for (let i = 0; i < 1000; i++) {
     const category = categories[Math.floor(Math.random() * categories.length)];
     const subcategory = category.subcategories[Math.floor(Math.random() * category.subcategories.length)];
@@ -152,6 +174,20 @@ const generateMockBusinesses = (): Business[] => {
         level: award.level
       });
     }
+
+    // Generate additional categories (some businesses are in multiple categories)
+    const businessCategories = [category.name];
+    if (Math.random() > 0.7) {
+      const additionalCategory = categories[Math.floor(Math.random() * categories.length)];
+      if (additionalCategory.name !== category.name) {
+        businessCategories.push(additionalCategory.name);
+      }
+    }
+
+    // Generate services based on category
+    const categoryServices = servicesByCategory[category.name] || ["Service A", "Service B", "Service C"];
+    const numServices = Math.floor(Math.random() * 4) + 3; // 3-6 services
+    const businessServices = categoryServices.slice(0, numServices);
     
     businesses.push({
       id: `business-${i + 1}`,
@@ -178,12 +214,18 @@ const generateMockBusinesses = (): Business[] => {
       rating: Math.round((Math.random() * 2 + 3) * 10) / 10,
       reviewCount: Math.floor(Math.random() * 500) + 10,
       yearEstablished: Math.floor(Math.random() * 30) + 1994,
-      services: [`Service A`, `Service B`, `Service C`].slice(0, Math.floor(Math.random() * 3) + 1),
+      services: businessServices,
       socialMedia: {
-        facebook: Math.random() > 0.5 ? `https://facebook.com/business${i + 1}` : undefined,
-        linkedin: Math.random() > 0.5 ? `https://linkedin.com/company/business${i + 1}` : undefined
+        facebook: Math.random() > 0.6 ? `https://facebook.com/business${i + 1}` : undefined,
+        instagram: Math.random() > 0.5 ? `https://instagram.com/business${i + 1}` : undefined,
+        twitter: Math.random() > 0.7 ? `https://twitter.com/business${i + 1}` : undefined,
+        linkedin: Math.random() > 0.6 ? `https://linkedin.com/company/business${i + 1}` : undefined,
+        youtube: Math.random() > 0.8 ? `https://youtube.com/@business${i + 1}` : undefined
       },
-      isVerified: Math.random() > 0.7 // 30% chance of being verified
+      isVerified: Math.random() > 0.7, // 30% chance of being verified
+      sponsorshipLevel: sponsorshipLevels[Math.floor(Math.random() * sponsorshipLevels.length)],
+      isCertifiedMember: Math.random() > 0.6, // 40% chance of being certified member
+      categories: businessCategories
     });
   }
 
