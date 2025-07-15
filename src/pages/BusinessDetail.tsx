@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Star, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag } from 'lucide-react';
+import { ArrowLeft, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag } from 'lucide-react';
 import { mockBusinesses } from '@/data/mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -78,12 +77,6 @@ const BusinessDetail: React.FC = () => {
               <p className="text-lg text-gray-600 mb-3">{business.subcategory}</p>
               
               <div className="flex items-center gap-6 mb-4">
-                <div className="flex items-center gap-1">
-                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-lg font-semibold">{business.rating}</span>
-                  <span className="text-gray-500">({business.reviewCount} reviews)</span>
-                </div>
-                
                 <div className="flex items-center gap-1 text-gray-600">
                   <Calendar className="h-5 w-5" />
                   <span>Est. {business.yearEstablished}</span>
@@ -298,14 +291,6 @@ const BusinessDetail: React.FC = () => {
                 <CardTitle>Quick Stats</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Rating</span>
-                  <span className="font-semibold">{business.rating}/5.0</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Reviews</span>
-                  <span className="font-semibold">{business.reviewCount}</span>
-                </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Locations</span>
                   <span className="font-semibold">{business.locations.length}</span>
