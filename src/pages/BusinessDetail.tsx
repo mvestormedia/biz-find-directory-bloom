@@ -101,7 +101,7 @@ const BusinessDetail: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-1 text-gray-600">
-                  <Users className="h-5 w-5" />
+                  <MapPin className="h-5 w-5" />
                   <span>{business.locations.length} location{business.locations.length !== 1 ? 's' : ''}</span>
                 </div>
 
