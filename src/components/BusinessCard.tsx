@@ -101,39 +101,39 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
           {business.description}
         </p>
         
-        {/* Badges section */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          {getSponsorshipBadge(business.sponsorshipLevel)}
+        {/* Badges and View Details section */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-wrap gap-2 flex-1">
+            {getSponsorshipBadge(business.sponsorshipLevel)}
+            
+            {business.isCertifiedMember && (
+              <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                <Shield className="h-3 w-3 mr-1" />
+                Certified
+              </Badge>
+            )}
+            
+            {business.awards.slice(0, 2).map((award, index) => (
+              <Badge
+                key={index}
+                variant="outline"
+                className={`text-xs ${getAwardColor(award.level)}`}
+              >
+                <Award className="h-3 w-3 mr-1" />
+                {award.name} {award.year}
+              </Badge>
+            ))}
+            
+            {business.awards.length > 2 && (
+              <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600">
+                +{business.awards.length - 2} more
+              </Badge>
+            )}
+          </div>
           
-          {business.isCertifiedMember && (
-            <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-              <Shield className="h-3 w-3 mr-1" />
-              Certified
-            </Badge>
-          )}
-          
-          {business.awards.slice(0, 2).map((award, index) => (
-            <Badge
-              key={index}
-              variant="outline"
-              className={`text-xs ${getAwardColor(award.level)}`}
-            >
-              <Award className="h-3 w-3 mr-1" />
-              {award.name} {award.year}
-            </Badge>
-          ))}
-          
-          {business.awards.length > 2 && (
-            <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600">
-              +{business.awards.length - 2} more
-            </Badge>
-          )}
-        </div>
-        
-        <div className="flex items-center justify-end text-sm text-gray-600">
           <Link 
             to={`/business/${business.id}`}
-            className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            className="text-blue-600 hover:text-blue-800 font-medium transition-colors text-sm whitespace-nowrap"
           >
             View Details →
           </Link>

@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryFilter from '@/components/CategoryFilter';
 import BusinessCard from '@/components/BusinessCard';
 import { mockBusinesses, Business } from '@/data/mockData';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -15,6 +16,7 @@ const SearchResults: React.FC = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(searchParams.get('subcategory') || '');
   const [filteredBusinesses, setFilteredBusinesses] = useState<Business[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState('relevance');
   const businessesPerPage = 12;
 
   useEffect(() => {
@@ -52,6 +54,24 @@ const SearchResults: React.FC = () => {
     setFilteredBusinesses(filtered);
     setCurrentPage(1);
   }, [searchTerm, location, selectedCategory, selectedSubcategory]);
+
+  // Sort businesses
+  useEffect(() => {
+    const sortedBusinesses = [...filteredBusinesses].sort((a, b) => {
+      switch (sortBy) {
+        case 'distance':
+          // For demo purposes, sort by location count as proxy for distance
+          return a.locations.length - b.locations.length;
+        case 'alphabetical':
+          return a.name.localeCompare(b.name);
+        case 'relevance':
+        default:
+          // Sort by rating as proxy for relevance
+          return b.rating - a.rating;
+      }
+    });
+    setFilteredBusinesses(sortedBusinesses);
+  }, [sortBy]);
 
   const handleSearch = () => {
     // Search is handled by useEffect when state changes
@@ -110,6 +130,21 @@ const SearchResults: React.FC = () => {
                     {location && ` near ${location}`}
                   </p>
                 )}
+              </div>
+              
+              {/* Sort dropdown */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Sort by:</span>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="relevance">Relevance</SelectItem>
+                    <SelectItem value="distance">Distance</SelectItem>
+                    <SelectItem value="alphabetical">Alphabetical</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
