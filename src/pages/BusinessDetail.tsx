@@ -76,7 +76,7 @@ const BusinessDetail: React.FC = () => {
       <div className="bg-white border-b border-gray-200">
         <div className="container mx-auto px-4 py-6">
           <Link 
-            to="/search" 
+            to="/" 
             className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

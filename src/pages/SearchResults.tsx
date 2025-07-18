@@ -51,13 +51,8 @@ const SearchResults: React.FC = () => {
       );
     }
 
-    setFilteredBusinesses(filtered);
-    setCurrentPage(1);
-  }, [searchTerm, location, selectedCategory, selectedSubcategory]);
-
-  // Sort businesses
-  useEffect(() => {
-    const sortedBusinesses = [...filteredBusinesses].sort((a, b) => {
+    // Apply sorting
+    const sortedBusinesses = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case 'distance':
           // For demo purposes, sort by location count as proxy for distance
@@ -70,8 +65,11 @@ const SearchResults: React.FC = () => {
           return b.rating - a.rating;
       }
     });
+
     setFilteredBusinesses(sortedBusinesses);
-  }, [sortBy]);
+    setCurrentPage(1);
+  }, [searchTerm, location, selectedCategory, selectedSubcategory, sortBy]);
+
 
   const handleSearch = () => {
     // Search is handled by useEffect when state changes
@@ -142,7 +140,7 @@ const SearchResults: React.FC = () => {
                   <SelectContent>
                     <SelectItem value="relevance">Relevance</SelectItem>
                     <SelectItem value="distance">Distance</SelectItem>
-                    <SelectItem value="alphabetical">Alphabetical</SelectItem>
+                    <SelectItem value="alphabetical">Name</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
