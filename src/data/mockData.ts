@@ -47,6 +47,16 @@ export interface Business {
   categories: string[];
 }
 
+export interface Review {
+  id: string;
+  businessId: string;
+  reviewerName: string;
+  rating: number;
+  comment: string;
+  date: string;
+  verified: boolean;
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -231,5 +241,64 @@ const generateMockBusinesses = (): Business[] => {
 
   return businesses;
 };
+
+// Generate mock reviews
+const generateMockReviews = (): Review[] => {
+  const reviews: Review[] = [];
+  const reviewerNames = [
+    "Sarah Johnson", "Michael Chen", "Emily Rodriguez", "David Thompson", "Jessica Wang",
+    "Robert Miller", "Amanda Davis", "Christopher Lee", "Maria Garcia", "James Wilson",
+    "Lisa Anderson", "Kevin Zhang", "Jennifer Brown", "Daniel Kim", "Ashley Taylor",
+    "Matthew Martinez", "Nicole White", "Ryan Liu", "Lauren Johnson", "Brandon Davis"
+  ];
+
+  const reviewComments = [
+    "Excellent service! Very professional and went above and beyond my expectations.",
+    "Great experience from start to finish. Highly recommend to anyone looking for quality service.",
+    "Outstanding work! They really know what they're doing and deliver on their promises.",
+    "Good service overall. Fair pricing and timely completion of work.",
+    "Professional team with great attention to detail. Will definitely use again.",
+    "Exceeded my expectations! The quality of work was fantastic.",
+    "Reliable and trustworthy. They delivered exactly what was promised.",
+    "Amazing customer service. They made the entire process so easy.",
+    "Top-notch quality! Worth every penny spent.",
+    "Quick and efficient service. Very satisfied with the results.",
+    "Friendly staff and excellent workmanship. Couldn't be happier!",
+    "Great value for money. The team was professional and courteous.",
+    "Impressed with their expertise and professionalism throughout the project.",
+    "Solid service and good communication. They kept me informed every step of the way.",
+    "Exceptional quality and attention to detail. Highly recommended!",
+    "Very pleased with the outcome. They truly care about customer satisfaction.",
+    "Fast, reliable, and affordable. What more could you ask for?",
+    "Professional service with a personal touch. Will use them again for sure.",
+    "Outstanding results! They delivered exactly what I was looking for.",
+    "Great experience overall. The team was knowledgeable and helpful."
+  ];
+
+  // Generate reviews for each business
+  for (let businessIndex = 1; businessIndex <= 1000; businessIndex++) {
+    const numReviews = Math.floor(Math.random() * 15) + 5; // 5-19 reviews per business
+    
+    for (let reviewIndex = 0; reviewIndex < numReviews; reviewIndex++) {
+      const daysAgo = Math.floor(Math.random() * 365);
+      const reviewDate = new Date();
+      reviewDate.setDate(reviewDate.getDate() - daysAgo);
+      
+      reviews.push({
+        id: `review-${businessIndex}-${reviewIndex + 1}`,
+        businessId: `business-${businessIndex}`,
+        reviewerName: reviewerNames[Math.floor(Math.random() * reviewerNames.length)],
+        rating: Math.floor(Math.random() * 5) + 1, // 1-5 stars
+        comment: reviewComments[Math.floor(Math.random() * reviewComments.length)],
+        date: reviewDate.toISOString().split('T')[0], // YYYY-MM-DD format
+        verified: Math.random() > 0.3 // 70% chance of being verified
+      });
+    }
+  }
+
+  return reviews;
+};
+
+export const mockReviews = generateMockReviews();
 
 export const mockBusinesses = generateMockBusinesses();

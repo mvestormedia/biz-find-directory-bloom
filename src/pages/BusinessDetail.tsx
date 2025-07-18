@@ -1,14 +1,32 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag, Star } from 'lucide-react';
-import { mockBusinesses } from '@/data/mockData';
+import { ArrowLeft, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag, Star, Search, Filter } from 'lucide-react';
+import { mockBusinesses, mockReviews } from '@/data/mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const BusinessDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const business = mockBusinesses.find(b => b.id === id);
+  const [reviewSearchTerm, setReviewSearchTerm] = useState('');
+
+  // Get reviews for this business
+  const businessReviews = useMemo(() => {
+    const reviews = mockReviews.filter(review => review.businessId === id);
+    return reviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [id]);
+
+  // Filter reviews based on search term
+  const filteredReviews = useMemo(() => {
+    if (!reviewSearchTerm) return businessReviews.slice(0, 10); // Show latest 10 reviews
+    
+    return businessReviews.filter(review => 
+      review.reviewerName.toLowerCase().includes(reviewSearchTerm.toLowerCase()) ||
+      review.comment.toLowerCase().includes(reviewSearchTerm.toLowerCase())
+    ).slice(0, 10);
+  }, [businessReviews, reviewSearchTerm]);
 
   if (!business) {
     return (
@@ -290,6 +308,80 @@ const BusinessDetail: React.FC = () => {
                 </CardContent>
               </Card>
             )}
+
+            {/* Recent Reviews */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-yellow-500" />
+                  Recent Reviews
+                </CardTitle>
+                <div className="relative">
+                  <Search className="h-4 w-4 absolute left-3 top-3 text-gray-400" />
+                  <Input
+                    placeholder="Search reviews..."
+                    value={reviewSearchTerm}
+                    onChange={(e) => setReviewSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4 max-h-96 overflow-y-auto">
+                {filteredReviews.length > 0 ? (
+                  filteredReviews.map((review) => (
+                    <div key={review.id} className="border border-gray-100 rounded-lg p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm">{review.reviewerName}</span>
+                          {review.verified && (
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Verified
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {Array.from({ length: 5 }, (_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3 w-3 ${
+                                i < review.rating
+                                  ? 'text-yellow-500 fill-current'
+                                  : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-gray-700 text-sm">{review.comment}</p>
+                      <div className="text-xs text-gray-500">
+                        {new Date(review.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-6 text-gray-500">
+                    <Search className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p>No reviews found</p>
+                    {reviewSearchTerm && (
+                      <p className="text-sm">Try adjusting your search terms</p>
+                    )}
+                  </div>
+                )}
+                
+                {reviewSearchTerm && filteredReviews.length > 0 && (
+                  <div className="text-center pt-2">
+                    <p className="text-xs text-gray-500">
+                      Showing {filteredReviews.length} of {businessReviews.length} reviews
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
           </div>
         </div>
