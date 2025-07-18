@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag } from 'lucide-react';
+import { ArrowLeft, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag, Star } from 'lucide-react';
 import { mockBusinesses } from '@/data/mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -85,6 +85,12 @@ const BusinessDetail: React.FC = () => {
                 <div className="flex items-center gap-1 text-gray-600">
                   <Users className="h-5 w-5" />
                   <span>{business.locations.length} location{business.locations.length !== 1 ? 's' : ''}</span>
+                </div>
+
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                  <span className="font-semibold">{business.rating}</span>
+                  <span>({business.reviewCount} reviews)</span>
                 </div>
               </div>
               
@@ -285,28 +291,6 @@ const BusinessDetail: React.FC = () => {
               </Card>
             )}
 
-            {/* Quick Stats */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Locations</span>
-                  <span className="font-semibold">{business.locations.length}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Established</span>
-                  <span className="font-semibold">{business.yearEstablished}</span>
-                </div>
-                {business.sponsorshipLevel && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Sponsor Level</span>
-                    <span className="font-semibold capitalize">{business.sponsorshipLevel}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

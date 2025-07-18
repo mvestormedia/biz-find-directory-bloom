@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { MapPin, Award, CheckCircle, Diamond, Shield } from 'lucide-react';
+import { MapPin, Award, CheckCircle, Diamond, Shield, Star } from 'lucide-react';
 import { Business } from '@/data/mockData';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -81,9 +81,16 @@ const BusinessCard: React.FC<BusinessCardProps> = ({ business }) => {
             </Link>
             <p className="text-sm text-gray-600 mt-1">{business.subcategory}</p>
             
-            <div className="flex items-center gap-1 text-sm text-gray-600 mt-2">
-              <MapPin className="h-4 w-4" />
-              <span>{business.locations.length} location{business.locations.length !== 1 ? 's' : ''}</span>
+            <div className="flex items-center gap-4 text-sm text-gray-600 mt-2">
+              <div className="flex items-center gap-1">
+                <MapPin className="h-4 w-4" />
+                <span>{business.locations.length} location{business.locations.length !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                <span>{business.rating}</span>
+                <span>({business.reviewCount} reviews)</span>
+              </div>
             </div>
           </div>
         </div>
