@@ -32,6 +32,14 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
     );
   }, [searchTerm]);
 
+  // Auto-expand categories that match search results
+  React.useEffect(() => {
+    if (searchTerm && filteredCategories.length > 0) {
+      // Auto-expand the first matching category
+      setExpandedCategory(filteredCategories[0].id);
+    }
+  }, [searchTerm, filteredCategories]);
+
   const toggleCategory = (categoryId: string) => {
     setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
   };
@@ -64,7 +72,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
         )}
       </div>
       
-      <div className="space-y-2 max-h-96 overflow-y-auto">
+      <div className="space-y-2">
         <button
           onClick={() => onCategoryChange('', '')}
           className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
