@@ -45,6 +45,11 @@ export interface Business {
   sponsorshipLevel: 'diamond' | 'gold' | 'silver' | 'bronze' | null;
   isCertifiedMember: boolean;
   categories: string[];
+  isSponsored: boolean;
+  isTrustedMember: boolean;
+  claimedStatus: 'claimed' | 'unclaimed';
+  verifiedDate?: string;
+  annualSponsorBadges: ('Diamond Sponsor' | 'Ruby Sponsor' | 'Emerald Sponsor' | 'Sapphire Sponsor')[];
 }
 
 export interface Review {
@@ -167,6 +172,7 @@ const generateMockBusinesses = (): Business[] => {
   };
 
   const sponsorshipLevels: ('diamond' | 'gold' | 'silver' | 'bronze' | null)[] = ['diamond', 'gold', 'silver', 'bronze', null];
+  const annualSponsorOptions: ('Diamond Sponsor' | 'Ruby Sponsor' | 'Emerald Sponsor' | 'Sapphire Sponsor')[] = ['Diamond Sponsor', 'Ruby Sponsor', 'Emerald Sponsor', 'Sapphire Sponsor'];
 
   for (let i = 0; i < 1000; i++) {
     const category = categories[Math.floor(Math.random() * categories.length)];
@@ -198,6 +204,19 @@ const generateMockBusinesses = (): Business[] => {
     const categoryServices = servicesByCategory[category.name] || ["Service A", "Service B", "Service C"];
     const numServices = Math.floor(Math.random() * 4) + 3; // 3-6 services
     const businessServices = categoryServices.slice(0, numServices);
+
+    // Generate annual sponsor badges
+    const numAnnualSponsorBadges = Math.floor(Math.random() * 3); // 0-2 badges
+    const businessAnnualSponsorBadges: ('Diamond Sponsor' | 'Ruby Sponsor' | 'Emerald Sponsor' | 'Sapphire Sponsor')[] = [];
+    for (let k = 0; k < numAnnualSponsorBadges; k++) {
+      const badge = annualSponsorOptions[Math.floor(Math.random() * annualSponsorOptions.length)];
+      if (!businessAnnualSponsorBadges.includes(badge)) {
+        businessAnnualSponsorBadges.push(badge);
+      }
+    }
+
+    const isTrustedMember = Math.random() > 0.6; // 40% chance
+    const verifiedDate = Math.random() > 0.5 ? `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 4) + 20}` : undefined;
     
     businesses.push({
       id: `business-${i + 1}`,
@@ -235,7 +254,12 @@ const generateMockBusinesses = (): Business[] => {
       isVerified: Math.random() > 0.7, // 30% chance of being verified
       sponsorshipLevel: sponsorshipLevels[Math.floor(Math.random() * sponsorshipLevels.length)],
       isCertifiedMember: Math.random() > 0.6, // 40% chance of being certified member
-      categories: businessCategories
+      categories: businessCategories,
+      isSponsored: Math.random() > 0.8, // 20% chance of being sponsored
+      isTrustedMember,
+      claimedStatus: Math.random() > 0.3 ? 'claimed' : 'unclaimed',
+      verifiedDate,
+      annualSponsorBadges: businessAnnualSponsorBadges
     });
   }
 

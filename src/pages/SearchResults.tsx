@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown, Info } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryFilter from '@/components/CategoryFilter';
 import BusinessCard from '@/components/BusinessCard';
+import MapView from '@/components/MapView';
 import { mockBusinesses, Business } from '@/data/mockData';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -80,11 +82,15 @@ const SearchResults: React.FC = () => {
     setSelectedSubcategory(subcategory);
   };
 
-  // Pagination
+  // Separate sponsored and regular results
+  const sponsoredBusinesses = filteredBusinesses.filter(business => business.isSponsored);
+  const regularBusinesses = filteredBusinesses.filter(business => !business.isSponsored);
+
+  // Pagination for regular businesses only (sponsored are shown all)
   const indexOfLastBusiness = currentPage * businessesPerPage;
   const indexOfFirstBusiness = indexOfLastBusiness - businessesPerPage;
-  const currentBusinesses = filteredBusinesses.slice(indexOfFirstBusiness, indexOfLastBusiness);
-  const totalPages = Math.ceil(filteredBusinesses.length / businessesPerPage);
+  const currentRegularBusinesses = regularBusinesses.slice(indexOfFirstBusiness, indexOfLastBusiness);
+  const totalPages = Math.ceil(regularBusinesses.length / businessesPerPage);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -105,12 +111,17 @@ const SearchResults: React.FC = () => {
         <div className="flex gap-8">
           {/* Sidebar with filters */}
           <div className="w-80 flex-shrink-0 hidden lg:block">
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              selectedSubcategory={selectedSubcategory}
-              onCategoryChange={handleCategoryChange}
-              className="sticky top-24"
-            />
+            <div className="space-y-6 sticky top-24">
+              {/* Map View */}
+              <MapView businesses={filteredBusinesses} />
+              
+              {/* Category Filter */}
+              <CategoryFilter
+                selectedCategory={selectedCategory}
+                selectedSubcategory={selectedSubcategory}
+                onCategoryChange={handleCategoryChange}
+              />
+            </div>
           </div>
 
           {/* Main content */}
@@ -156,13 +167,52 @@ const SearchResults: React.FC = () => {
             </div>
 
             {/* Results grid */}
-            {currentBusinesses.length > 0 ? (
+            {(sponsoredBusinesses.length > 0 || currentRegularBusinesses.length > 0) ? (
               <>
-                <div className="grid gap-6 mb-8">
-                  {currentBusinesses.map((business) => (
-                    <BusinessCard key={business.id} business={business} />
-                  ))}
-                </div>
+                {/* Sponsored Results */}
+                {sponsoredBusinesses.length > 0 && (
+                  <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <h2 className="text-lg font-semibold text-gray-900">Sponsored Results</h2>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs text-sm">
+                            Candidates paid for this premium location as a benefit of their{' '}
+                            <a 
+                              href="/trusted-membership" 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:text-blue-800 underline"
+                            >
+                              Trusted Membership
+                            </a>
+                            .
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                    <div className="grid gap-6 mb-8">
+                      {sponsoredBusinesses.map((business) => (
+                        <BusinessCard key={business.id} business={business} />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* All Other Results */}
+                {currentRegularBusinesses.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">All Other Results</h2>
+                    <div className="grid gap-6">
+                      {currentRegularBusinesses.map((business) => (
+                        <BusinessCard key={business.id} business={business} />
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Pagination */}
                 {totalPages > 1 && (

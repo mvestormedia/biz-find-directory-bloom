@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import TrustedMemberBadge from '@/components/TrustedMemberBadge';
+import AwardBadge from '@/components/AwardBadge';
 
 const BusinessDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -90,60 +92,74 @@ const BusinessDetail: React.FC = () => {
               className="w-24 h-24 rounded-xl object-cover border border-gray-200"
             />
             
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{business.name}</h1>
+            <div className="flex-1 relative">
+              {/* Badges in top-right */}
+              <div className="absolute top-0 right-0 flex flex-wrap gap-2 justify-end">
+                {business.isTrustedMember && (
+                  <TrustedMemberBadge onClick={() => window.open('/trusted-membership', '_blank')} />
+                )}
+                
+                {/* Award badges */}
+                {business.awards.slice(0, 2).map((award, index) => (
+                  <AwardBadge
+                    key={`award-${index}`}
+                    type="award"
+                    level={award.level}
+                    year={award.year}
+                  />
+                ))}
+                
+                {/* Annual sponsor badges */}
+                {business.annualSponsorBadges.slice(0, 2).map((sponsor, index) => (
+                  <AwardBadge
+                    key={`sponsor-${index}`}
+                    type="sponsor"
+                    sponsorType={sponsor}
+                  />
+                ))}
+              </div>
+
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 pr-40">{business.name}</h1>
               <p className="text-lg text-gray-600 mb-3">{business.subcategory}</p>
               
               <div className="flex items-center gap-6 mb-4">
-                <div className="flex items-center gap-1 text-gray-600">
-                  <Calendar className="h-5 w-5" />
-                  <span>Est. {business.yearEstablished}</span>
-                </div>
-                
-                <div className="flex items-center gap-1 text-gray-600">
-                  <MapPin className="h-5 w-5" />
-                  <span>{business.locations.length} location{business.locations.length !== 1 ? 's' : ''}</span>
-                </div>
-
                 <div className="flex items-center gap-1 text-gray-600">
                   <Star className="h-5 w-5 text-yellow-500 fill-current" />
                   <span className="font-semibold">{business.rating}</span>
                   <span>({business.reviewCount} reviews)</span>
                 </div>
+
+                <div className="flex items-center gap-1 text-gray-600">
+                  <MapPin className="h-5 w-5" />
+                  <span>{business.locations.length} location{business.locations.length !== 1 ? 's' : ''}</span>
+                </div>
+                
+                <div className="flex items-center gap-1 text-gray-600">
+                  <Calendar className="h-5 w-5" />
+                  <span>Est. {business.yearEstablished}</span>
+                </div>
               </div>
               
-              <div className="flex flex-wrap gap-2 mb-4">
-                {business.isVerified && (
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Verified
-                  </Badge>
-                )}
-                
-                {getSponsorshipBadge(business.sponsorshipLevel)}
-                
-                {business.isCertifiedMember && (
+              {/* Claimed status and verification */}
+              <div className="flex items-center gap-3 mb-4">
+                {business.claimedStatus === 'claimed' ? (
                   <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
-                    <Shield className="h-3 w-3 mr-1" />
-                    Certified Member
+                    Claimed
                   </Badge>
+                ) : (
+                  <Link 
+                    to="/claim-listing" 
+                    className="text-blue-600 hover:text-blue-800 underline text-sm"
+                  >
+                    Claim This Listing
+                  </Link>
                 )}
                 
-                {business.awards.slice(0, 2).map((award, index) => (
-                  <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                    <Award className="h-3 w-3 mr-1" />
-                    {award.name} {award.year}
-                  </Badge>
-                ))}
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                {business.categories.map((cat, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    <Tag className="h-3 w-3 mr-1" />
-                    {cat}
-                  </Badge>
-                ))}
+                {business.verifiedDate && (
+                  <span className="text-sm text-gray-600">
+                    Verified {business.verifiedDate}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -170,7 +186,7 @@ const BusinessDetail: React.FC = () => {
             {business.services.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Services</CardTitle>
+                  <CardTitle>Services & Products</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -197,7 +213,7 @@ const BusinessDetail: React.FC = () => {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
                           <h4 className="font-semibold text-gray-900 mb-3">Address</h4>
-                          <div className="text-gray-700 space-y-1">
+                         <div className="text-gray-700 space-y-1">
                             <div className="flex items-start gap-2">
                               <MapPin className="h-4 w-4 mt-0.5 text-gray-400" />
                               <div>
@@ -213,9 +229,9 @@ const BusinessDetail: React.FC = () => {
                           <div className="space-y-2">
                             <div className="flex items-center gap-2 text-gray-700">
                               <Phone className="h-4 w-4 text-gray-400" />
-                              <a href={`tel:${location.phone}`} className="text-blue-600 hover:text-blue-800 transition-colors">
-                                Tap to Call
-                              </a>
+                              <button className="text-blue-600 hover:text-blue-800 transition-colors">
+                                Get Phone Number
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -246,9 +262,9 @@ const BusinessDetail: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-gray-400" />
-                  <a href={`tel:${business.locations[0]?.phone}`} className="text-blue-600 hover:text-blue-800 transition-colors">
-                    Tap to Call
-                  </a>
+                  <button className="text-blue-600 hover:text-blue-800 transition-colors">
+                    Get Phone Number
+                  </button>
                 </div>
                 
                 <div className="flex items-center gap-3">
@@ -272,42 +288,34 @@ const BusinessDetail: React.FC = () => {
                   </div>
                 )}
                 
-                <Button className="w-full mt-4">
-                  Contact Business
-                </Button>
+                {/* Social Media integrated */}
+                {Object.entries(business.socialMedia).some(([_, url]) => url) && (
+                  <div className="border-t pt-4 mt-4">
+                    <h4 className="font-semibold text-gray-900 mb-3">Follow Us</h4>
+                    <div className="flex flex-wrap gap-3">
+                      {Object.entries(business.socialMedia).map(([platform, url]) => 
+                        url ? (
+                          <a
+                            key={platform}
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm"
+                          >
+                            {getSocialIcon(platform)}
+                            <span className="capitalize">{platform}</span>
+                          </a>
+                        ) : null
+                      )}
+                    </div>
+                  </div>
+                )}
                 
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full mt-4">
                   Claim Listing
                 </Button>
               </CardContent>
             </Card>
-
-            {/* Social Media */}
-            {Object.entries(business.socialMedia).some(([_, url]) => url) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Follow Us</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-3">
-                    {Object.entries(business.socialMedia).map(([platform, url]) => 
-                      url ? (
-                        <a
-                          key={platform}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm"
-                        >
-                          {getSocialIcon(platform)}
-                          <span className="capitalize">{platform}</span>
-                        </a>
-                      ) : null
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Recent Reviews */}
             <Card>
