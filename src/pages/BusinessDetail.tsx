@@ -13,6 +13,7 @@ const BusinessDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const business = mockBusinesses.find(b => b.id === id);
   const [reviewSearchTerm, setReviewSearchTerm] = useState('');
+  const [showPhoneNumbers, setShowPhoneNumbers] = useState<{ [key: string]: boolean }>({});
 
   // Get reviews for this business
   const businessReviews = useMemo(() => {
@@ -147,15 +148,17 @@ const BusinessDetail: React.FC = () => {
                     Claimed
                   </Badge>
                 ) : (
-                  <Link 
-                    to="/claim-listing" 
-                    className="text-blue-600 hover:text-blue-800 underline text-sm"
-                  >
-                    Claim This Listing
-                  </Link>
+                  <Badge variant="outline" className="border-blue-200 text-blue-600 hover:bg-blue-50">
+                    <Link 
+                      to="/claim-listing" 
+                      className="flex items-center"
+                    >
+                      Claim This Listing
+                    </Link>
+                  </Badge>
                 )}
                 
-                {business.verifiedDate && (
+                {business.claimedStatus === 'claimed' && business.verifiedDate && (
                   <span className="text-sm text-gray-600">
                     Verified {business.verifiedDate}
                   </span>
@@ -229,9 +232,16 @@ const BusinessDetail: React.FC = () => {
                           <div className="space-y-2">
                             <div className="flex items-center gap-2 text-gray-700">
                               <Phone className="h-4 w-4 text-gray-400" />
-                              <button className="text-blue-600 hover:text-blue-800 transition-colors">
-                                Get Phone Number
-                              </button>
+                              {showPhoneNumbers[location.id] ? (
+                                <span className="text-gray-900">{location.phone}</span>
+                              ) : (
+                                <button 
+                                  onClick={() => setShowPhoneNumbers(prev => ({ ...prev, [location.id]: true }))}
+                                  className="text-blue-600 hover:text-blue-800 transition-colors"
+                                >
+                                  Get Phone Number
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -262,9 +272,16 @@ const BusinessDetail: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-gray-400" />
-                  <button className="text-blue-600 hover:text-blue-800 transition-colors">
-                    Get Phone Number
-                  </button>
+                  {business.locations.length > 0 && showPhoneNumbers[business.locations[0].id] ? (
+                    <span className="text-gray-900">{business.locations[0].phone}</span>
+                  ) : (
+                    <button 
+                      onClick={() => business.locations.length > 0 && setShowPhoneNumbers(prev => ({ ...prev, [business.locations[0].id]: true }))}
+                      className="text-blue-600 hover:text-blue-800 transition-colors"
+                    >
+                      Get Phone Number
+                    </button>
+                  )}
                 </div>
                 
                 <div className="flex items-center gap-3">
@@ -311,9 +328,6 @@ const BusinessDetail: React.FC = () => {
                   </div>
                 )}
                 
-                <Button variant="outline" className="w-full mt-4">
-                  Claim Listing
-                </Button>
               </CardContent>
             </Card>
 
