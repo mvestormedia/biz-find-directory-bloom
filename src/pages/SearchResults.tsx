@@ -1,14 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, ChevronDown, HelpCircle } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import CategoryFilter from '@/components/CategoryFilter';
 import BusinessCard from '@/components/BusinessCard';
-import MapView from '@/components/MapView';
 import { mockBusinesses, Business } from '@/data/mockData';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const SearchResults: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -19,7 +17,6 @@ const SearchResults: React.FC = () => {
   const [filteredBusinesses, setFilteredBusinesses] = useState<Business[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('relevance');
-  const [currentView, setCurrentView] = useState<'list' | 'map'>('list');
   const businessesPerPage = 12;
 
   useEffect(() => {
@@ -83,10 +80,6 @@ const SearchResults: React.FC = () => {
     setSelectedSubcategory(subcategory);
   };
 
-  // Separate sponsored and regular results
-  const sponsoredBusinesses = filteredBusinesses.filter(business => business.sponsorshipLevel);
-  const regularBusinesses = filteredBusinesses.filter(business => !business.sponsorshipLevel);
-
   // Pagination
   const indexOfLastBusiness = currentPage * businessesPerPage;
   const indexOfFirstBusiness = indexOfLastBusiness - businessesPerPage;
@@ -94,43 +87,34 @@ const SearchResults: React.FC = () => {
   const totalPages = Math.ceil(filteredBusinesses.length / businessesPerPage);
 
   return (
-    <TooltipProvider>
-      <div className="min-h-screen bg-gray-50">
-        {/* Header with search */}
-        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-          <div className="container mx-auto px-4 py-4">
-            <SearchBar
-              searchTerm={searchTerm}
-              location={location}
-              onSearchChange={setSearchTerm}
-              onLocationChange={setLocation}
-              onSearch={handleSearch}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with search */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4">
+          <SearchBar
+            searchTerm={searchTerm}
+            location={location}
+            onSearchChange={setSearchTerm}
+            onLocationChange={setLocation}
+            onSearch={handleSearch}
+          />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex gap-8">
+          {/* Sidebar with filters */}
+          <div className="w-80 flex-shrink-0 hidden lg:block">
+            <CategoryFilter
+              selectedCategory={selectedCategory}
+              selectedSubcategory={selectedSubcategory}
+              onCategoryChange={handleCategoryChange}
+              className="sticky top-24"
             />
           </div>
-        </div>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex gap-8">
-            {/* Sidebar with filters */}
-            <div className="w-80 flex-shrink-0 hidden lg:block">
-              {/* Map View Component */}
-              <div className="mb-6">
-                <MapView
-                  onViewChange={setCurrentView}
-                  currentView={currentView}
-                />
-              </div>
-              
-              <CategoryFilter
-                selectedCategory={selectedCategory}
-                selectedSubcategory={selectedSubcategory}
-                onCategoryChange={handleCategoryChange}
-                className="sticky top-24"
-              />
-            </div>
-
-            {/* Main content */}
-            <div className="flex-1">
+          {/* Main content */}
+          <div className="flex-1">
             {/* Results header */}
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -172,52 +156,13 @@ const SearchResults: React.FC = () => {
             </div>
 
             {/* Results grid */}
-            {currentView === 'list' && currentBusinesses.length > 0 ? (
+            {currentBusinesses.length > 0 ? (
               <>
-                {/* Sponsored Results Section */}
-                {sponsoredBusinesses.length > 0 && (
-                  <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <h2 className="text-xl font-semibold text-gray-900">Sponsored Results</h2>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <HelpCircle className="h-4 w-4 text-gray-400 hover:text-gray-600" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="max-w-xs">
-                            Candidates paid for this premium location as a benefit of their{' '}
-                            <a 
-                              href="/trusted-membership" 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 underline"
-                            >
-                              Trusted Membership
-                            </a>
-                            .
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                    <div className="grid gap-6 mb-8">
-                      {sponsoredBusinesses.slice(indexOfFirstBusiness, indexOfLastBusiness).map((business) => (
-                        <BusinessCard key={business.id} business={business} />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* All Other Results Section */}
-                {regularBusinesses.length > 0 && (
-                  <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-4">All Other Results</h2>
-                    <div className="grid gap-6 mb-8">
-                      {regularBusinesses.slice(indexOfFirstBusiness, indexOfLastBusiness).map((business) => (
-                        <BusinessCard key={business.id} business={business} />
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="grid gap-6 mb-8">
+                  {currentBusinesses.map((business) => (
+                    <BusinessCard key={business.id} business={business} />
+                  ))}
+                </div>
 
                 {/* Pagination */}
                 {totalPages > 1 && (
@@ -296,20 +241,19 @@ const SearchResults: React.FC = () => {
                       Next
                     </button>
                   </div>
-                  )}
+                )}
               </>
-            ) : currentView === 'list' ? (
+            ) : (
               <div className="text-center py-12">
                 <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
                 <p className="text-gray-600">Try adjusting your search criteria or browse our categories.</p>
               </div>
-            ) : null}
-            </div>
+            )}
           </div>
         </div>
       </div>
-    </TooltipProvider>
+    </div>
   );
 };
 

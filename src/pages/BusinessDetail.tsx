@@ -1,13 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Phone, Globe, Mail, Calendar, Star, Search, Facebook, Instagram, Twitter, Linkedin, Youtube, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Award, MapPin, Phone, Globe, Mail, Calendar, Users, CheckCircle, Diamond, Facebook, Instagram, Twitter, Linkedin, Youtube, Shield, Tag, Star, Search, Filter } from 'lucide-react';
 import { mockBusinesses, mockReviews } from '@/data/mockData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import TrustedMemberBadge from '@/components/TrustedMemberBadge';
-import AwardBadge from '@/components/AwardBadge';
 
 const BusinessDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,25 +41,22 @@ const BusinessDetail: React.FC = () => {
     );
   }
 
-  // Helper to get award and sponsor badges
-  const getBusinessBadges = () => {
-    const badges = [];
+  const getSponsorshipBadge = (level: string | null) => {
+    if (!level) return null;
     
-    // Add award badges
-    business.awards.forEach((award, index) => {
-      badges.push(
-        <AwardBadge key={`award-${index}`} type="award" level={award.level} year={award.year} size="md" />
-      );
-    });
+    const colors = {
+      diamond: 'bg-purple-100 text-purple-800 border-purple-200',
+      gold: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      silver: 'bg-gray-100 text-gray-800 border-gray-200',
+      bronze: 'bg-orange-100 text-orange-800 border-orange-200'
+    };
     
-    // Add sponsor badge if available
-    if (business.sponsorshipLevel) {
-      badges.push(
-        <AwardBadge key="sponsor" type="sponsor" level={business.sponsorshipLevel} size="md" />
-      );
-    }
-    
-    return badges;
+    return (
+      <Badge variant="secondary" className={colors[level as keyof typeof colors]}>
+        <Diamond className="h-3 w-3 mr-1" />
+        {level.charAt(0).toUpperCase() + level.slice(1)} Sponsor
+      </Badge>
+    );
   };
 
   const getSocialIcon = (platform: string) => {
@@ -95,16 +90,14 @@ const BusinessDetail: React.FC = () => {
               className="w-24 h-24 rounded-xl object-cover border border-gray-200"
             />
             
-            <div className="flex-1 relative">
+            <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{business.name}</h1>
               <p className="text-lg text-gray-600 mb-3">{business.subcategory}</p>
               
-              {/* Changed order: reviews, locations, established date */}
               <div className="flex items-center gap-6 mb-4">
                 <div className="flex items-center gap-1 text-gray-600">
-                  <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                  <span className="font-semibold">{business.rating}</span>
-                  <span>({business.reviewCount} reviews)</span>
+                  <Calendar className="h-5 w-5" />
+                  <span>Est. {business.yearEstablished}</span>
                 </div>
                 
                 <div className="flex items-center gap-1 text-gray-600">
@@ -113,25 +106,44 @@ const BusinessDetail: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-1 text-gray-600">
-                  <Calendar className="h-5 w-5" />
-                  <span>Est. {business.yearEstablished}</span>
+                  <Star className="h-5 w-5 text-yellow-500 fill-current" />
+                  <span className="font-semibold">{business.rating}</span>
+                  <span>({business.reviewCount} reviews)</span>
                 </div>
               </div>
               
-              {/* Claimed status and verified date */}
-              <div className="flex items-center gap-2 mb-4">
-                <Button variant="outline" size="sm">
-                  Claim This Listing
-                </Button>
-                <span className="text-sm text-gray-600">
-                  Verified {new Date().toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' })}
-                </span>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {business.isVerified && (
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 border-blue-200">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Verified
+                  </Badge>
+                )}
+                
+                {getSponsorshipBadge(business.sponsorshipLevel)}
+                
+                {business.isCertifiedMember && (
+                  <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200">
+                    <Shield className="h-3 w-3 mr-1" />
+                    Certified Member
+                  </Badge>
+                )}
+                
+                {business.awards.slice(0, 2).map((award, index) => (
+                  <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                    <Award className="h-3 w-3 mr-1" />
+                    {award.name} {award.year}
+                  </Badge>
+                ))}
               </div>
               
-              {/* Badges in top-right */}
-              <div className="absolute top-0 right-0 flex flex-wrap gap-2 max-w-xs">
-                {business.isCertifiedMember && <TrustedMemberBadge size="sm" />}
-                {getBusinessBadges()}
+              <div className="flex flex-wrap gap-2">
+                {business.categories.map((cat, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    <Tag className="h-3 w-3 mr-1" />
+                    {cat}
+                  </Badge>
+                ))}
               </div>
             </div>
           </div>
@@ -154,11 +166,11 @@ const BusinessDetail: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Services & Products */}
+            {/* Services */}
             {business.services.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Services & Products</CardTitle>
+                  <CardTitle>Services</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -234,9 +246,9 @@ const BusinessDetail: React.FC = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-gray-400" />
-                  <button className="text-blue-600 hover:text-blue-800 transition-colors">
-                    Get Phone Number
-                  </button>
+                  <a href={`tel:${business.locations[0]?.phone}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                    Tap to Call
+                  </a>
                 </div>
                 
                 <div className="flex items-center gap-3">
@@ -260,28 +272,9 @@ const BusinessDetail: React.FC = () => {
                   </div>
                 )}
                 
-                {/* Social Media in Contact Information */}
-                {Object.entries(business.socialMedia).some(([_, url]) => url) && (
-                  <div className="border-t pt-4 mt-4">
-                    <h4 className="font-medium text-gray-900 mb-3">Follow Us</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {Object.entries(business.socialMedia).map(([platform, url]) => 
-                        url ? (
-                          <a
-                            key={platform}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-2 py-1 rounded border border-gray-200 hover:bg-gray-50 transition-colors text-xs"
-                          >
-                            {getSocialIcon(platform)}
-                            <span className="capitalize">{platform}</span>
-                          </a>
-                        ) : null
-                      )}
-                    </div>
-                  </div>
-                )}
+                <Button className="w-full mt-4">
+                  Contact Business
+                </Button>
                 
                 <Button variant="outline" className="w-full">
                   Claim Listing
@@ -289,6 +282,32 @@ const BusinessDetail: React.FC = () => {
               </CardContent>
             </Card>
 
+            {/* Social Media */}
+            {Object.entries(business.socialMedia).some(([_, url]) => url) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Follow Us</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-3">
+                    {Object.entries(business.socialMedia).map(([platform, url]) => 
+                      url ? (
+                        <a
+                          key={platform}
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors text-sm"
+                        >
+                          {getSocialIcon(platform)}
+                          <span className="capitalize">{platform}</span>
+                        </a>
+                      ) : null
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Recent Reviews */}
             <Card>
