@@ -159,9 +159,9 @@ const BusinessDetail: React.FC = () => {
                 )}
                 
                 {business.claimedStatus === 'claimed' && business.verifiedDate && (
-                  <span className="text-sm text-gray-600">
+                  <Badge variant="outline" className="border-green-200 text-green-600">
                     Verified {business.verifiedDate}
-                  </span>
+                  </Badge>
                 )}
               </div>
             </div>
